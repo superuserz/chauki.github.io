@@ -540,11 +540,13 @@
 
   <!-- CTA FORM -->
   <div class="cta-section">
-    <div class="notify-form" id="notify-form">
-      <input class="email-input" type="email" id="email-input" placeholder="your@email.com" />
-      <button class="notify-btn" onclick="handleSignup()">Notify me 🔔</button>
-    </div>
-    <div class="success-msg" id="success-msg">🎉 You're on the list! We'll email you on launch day.</div>
+    <div data-fs-success id="hero-success" class="success-msg">🎉 You're on the list! We'll email you on launch day.</div>
+    <div data-fs-error class="form-note" style="color:#e24b4a;display:none"></div>
+    <form id="hero-form" class="notify-form">
+      <input class="email-input" type="email" name="email" id="email-input" placeholder="your@email.com" data-fs-field required />
+      <span data-fs-error="email" style="font-size:12px;color:#e24b4a;display:block;margin-top:4px"></span>
+      <button class="notify-btn" type="submit" data-fs-submit-btn>Notify me 🔔</button>
+    </form>
     <p class="form-note">No spam. One email when we launch. That's it.</p>
   </div>
 </section>
@@ -600,49 +602,41 @@
   <p class="section-label">Don't miss launch</p>
   <h2 class="hero-title">Be first to <span>play.</span></h2>
   <p class="hero-tagline" style="margin-bottom:2rem">First 500 signups get lifetime premium access — free.</p>
-  <div class="notify-form">
-    <input class="email-input" type="email" placeholder="your@email.com" />
-    <button class="notify-btn" onclick="handleSignup()">Join the waitlist</button>
-  </div>
+  <div data-fs-success id="bottom-success" class="success-msg">🎉 You're on the list! We'll email you on launch day.</div>
+  <form id="bottom-form" class="notify-form">
+    <input class="email-input" type="email" name="email" placeholder="your@email.com" data-fs-field required />
+    <span data-fs-error="email" style="font-size:12px;color:#e24b4a;display:block;margin-top:4px"></span>
+    <button class="notify-btn" type="submit" data-fs-submit-btn>Join the waitlist</button>
+  </form>
   <p class="form-note" style="margin-top:10px">No spam. Unsubscribe anytime.</p>
 </section>
 
 <footer>
-  <p>© 2024 Chauki — Made with ❤️ in India &nbsp;·&nbsp; <a href="mailto:hello@chauki.app" style="color:var(--saffron);text-decoration:none">hello@chauki.app</a></p>
+  <p>© 2025 Chauki — Made with ❤️ in India &nbsp;·&nbsp; <a href="mailto:hello@chauki.app" style="color:var(--saffron);text-decoration:none">hello@chauki.app</a></p>
   <p style="margin-top:6px;font-size:10px;opacity:0.5">This is a validation landing page. The app is in development.</p>
 </footer>
 
 <script>
-  let signedUp = false;
+  window.formspree = window.formspree || function () { (formspree.q = formspree.q || []).push(arguments); };
+  formspree('initForm', { formElement: '#hero-form',   formId: 'xpqbvewp' });
+  formspree('initForm', { formElement: '#bottom-form', formId: 'xpqbvewp' });
 
-  function handleSignup() {
-    const input = document.getElementById('email-input');
-    const email = input ? input.value : '';
-    if (!email || !email.includes('@')) {
-      if (input) { input.style.borderColor = '#e24b4a'; setTimeout(() => input.style.borderColor = '', 1500); }
-      return;
-    }
-    if (signedUp) return;
-    signedUp = true;
-
-    const form = document.getElementById('notify-form');
-    const success = document.getElementById('success-msg');
-    if (form) form.style.display = 'none';
-    if (success) success.style.display = 'block';
-
+  function animateCounter() {
     const counter = document.getElementById('counter');
-    if (counter) {
-      let n = 1247;
-      const tick = setInterval(() => {
-        n++;
-        counter.textContent = n.toLocaleString('en-IN');
-        if (n >= 1252) clearInterval(tick);
-      }, 200);
-    }
-
-    // In a real page: POST to Mailchimp, Formspree, or Google Form here
-    console.log('Signup:', email);
+    if (!counter) return;
+    let n = 1247;
+    const tick = setInterval(() => {
+      n++;
+      counter.textContent = n.toLocaleString('en-IN');
+      if (n >= 1252) clearInterval(tick);
+    }, 200);
   }
+
+  ['hero-form', 'bottom-form'].forEach(id => {
+    const form = document.getElementById(id);
+    if (!form) return;
+    form.addEventListener('fs:success', () => animateCounter());
+  });
 
   function toggleAnnotations() {
     const el = document.getElementById('annotations');
@@ -651,10 +645,7 @@
     el.style.display = showing ? 'none' : 'block';
     btn.textContent = showing ? '💡 Show builder notes' : '✕ Hide notes';
   }
-
-  document.getElementById('email-input').addEventListener('keydown', e => {
-    if (e.key === 'Enter') handleSignup();
-  });
 </script>
+<script src="https://unpkg.com/@formspree/ajax@1" defer></script>
 </body>
 </html>
